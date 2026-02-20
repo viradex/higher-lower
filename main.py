@@ -1,13 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-# Formula for deciding higher/lower multiplier:
-#
-# M = S * (1 + N / 13)
-#
-# where M is multiplier, S is scaling factor (1.3),
-# and N is number of cards above/below current card
-
 
 def main():
     root = tk.Tk()
