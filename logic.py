@@ -76,53 +76,40 @@ class HigherLower:
             "K": 13,
         }
 
-        self.current_card_suit = None
         self.current_card = None
+        self.current_card_suit = None
 
-        self.current_hidden_card_suit = None
         self.current_hidden_card = None
+        self.current_hidden_card_suit = None
 
     def calc_multiplier(self):
-        """
-        Calculate the multiplier for higher, lower, and same value bets,
-        based on the card in `self.current_card`.
+        if self.current_card is None:
+            raise ValueError("No current card drawn.")
 
-        ---
+        cards = list(self.cards.keys())
+        index = cards.index(self.current_card)
 
-        Let:
-        - `H` = the number of cards higher than the current card
-        - `L` = the number of cards lower than the current card
-
-        The multiplier for a higher bet is calculated as: `13 / H` where `H ≠ 0`
-
-        The multiplier for a lower bet is calculated as: `13 / L` where `L ≠ 0`
-
-        The same bet always has a multiplier of 13 (constant).
-
-        Both the higher and lower multipliers are restricted to the range `[1.05, 13]`.
-        """
-        index = list(self.cards.keys()).index(self.current_card)
-        above = len(self.cards) - index - 1
+        above = len(cards) - index - 1
         below = index
 
-        prob_higher = above / len(self.cards)
-        prob_lower = below / len(self.cards)
+        total_remaining = 51
 
-        # Avoid ZeroDivisionError
-        multiplier_higher = 1 / prob_higher if prob_higher != 0 else 1
-        multiplier_lower = 1 / prob_lower if prob_lower != 0 else 1
+        higher_cards = above * 4
+        lower_cards = below * 4
+        same_cards = 3
 
-        # 1.05 <= x <= 13
-        multiplier_higher = max(1.05, min(multiplier_higher, 13))
-        multiplier_lower = max(1.05, min(multiplier_lower, 13))
+        def fair_multiplier(winning_cards):
+            if winning_cards == 0:
+                return 0
+            prob = winning_cards / total_remaining
 
-        rounded_higher = round(multiplier_higher / 0.05) * 0.05
-        rounded_lower = round(multiplier_lower / 0.05) * 0.05
+            value = round((1 / prob) / 0.05) * 0.05
+            return round(value, 2)
 
         return {
-            "higher": round(rounded_higher, 2),
-            "lower": round(rounded_lower, 2),
-            "same": float(len(self.cards)),
+            "higher": fair_multiplier(higher_cards),
+            "lower": fair_multiplier(lower_cards),
+            "same": fair_multiplier(same_cards),
         }
 
     def draw_card(self):
@@ -178,11 +165,11 @@ class HigherLower:
 
         return guess == answer
 
-    def get_current_card(self):
-        pass
-
     def reset_game(self):
-        pass
+        self.current_card = None
+        self.current_card_suit = None
+        self.current_hidden_card = None
+        self.current_hidden_card_suit = None
 
 
 class Player:
@@ -222,4 +209,4 @@ if __name__ == "__main__":
     print(f"Player's card: {higher_lower.draw_card()[:-1]}")
     print(f"House's card: {higher_lower.draw_hidden_card()[:-1]}")
 
-    print(higher_lower.make_guess("higher"))
+    print(higher_lower.calc_multiplier())

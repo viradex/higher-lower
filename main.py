@@ -4,6 +4,10 @@ from tkinter import ttk, messagebox
 from logic import HigherLower, Player
 
 
+def submit_guess(guess, higher_lower):
+    pass
+
+
 def main():
     higher_lower = HigherLower()
     card = higher_lower.draw_card()
@@ -43,15 +47,17 @@ def main():
         "higher": ttk.Button(
             frame,
             text=f"Higher (x{multiplier["higher"]})",
-            command=lambda: print("Higher!"),
+            command=lambda: submit_guess("higher", higher_lower),
         ),
         "lower": ttk.Button(
             frame,
             text=f"Lower (x{multiplier["lower"]})",
-            command=lambda: print("Lower!"),
+            command=lambda: submit_guess("lower", higher_lower),
         ),
         "same": ttk.Button(
-            frame, text=f"Same (x{multiplier["same"]})", command=lambda: print("Same!")
+            frame,
+            text=f"Same (x{multiplier["same"]})",
+            command=lambda: submit_guess("same", higher_lower),
         ),
     }
 
@@ -63,6 +69,11 @@ def main():
         buttons[button].grid_configure(ipady=15)
 
         btn_format_counter += 1
+
+    if multiplier["higher"] <= 0:
+        buttons["higher"].config(state="disabled")
+    if multiplier["lower"] <= 0:
+        buttons["lower"].config(state="disabled")
 
     root.mainloop()
 
