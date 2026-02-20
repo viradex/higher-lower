@@ -4,12 +4,42 @@ from tkinter import ttk, messagebox
 from logic import HigherLower, Player
 
 
+keypress_code = [
+    "Up",
+    "Up",
+    "Down",
+    "Down",
+    "Left",
+    "Right",
+    "Left",
+    "Right",
+    "b",
+    "a",
+    "Return",
+]
+pressed_keys = []
+
+
 def submit_guess(guess, higher_lower):
     pass
 
 
 def check_btn_disabled(multiplier, entered_bet):
     pass
+
+
+def check_cheat_code(event, label, player):
+    pressed_keys.append(event.keysym)
+
+    if len(pressed_keys) > len(keypress_code):
+        pressed_keys.pop(0)
+
+    if pressed_keys == keypress_code:
+        player.increase_balance(500)
+        pressed_keys.clear()
+
+        print("Increased balance by $500!")
+        label.config(text=f"Money: ${player.balance}")
 
 
 def main():
@@ -29,7 +59,7 @@ def main():
     btn_style = ttk.Style()
     btn_style.configure("TButton", font=("Helvetica", 12))
 
-    bet_var = tk.StringVar()
+    bet_var = tk.StringVar(value="100")
 
     frame = ttk.Frame(root, padding=12)
     frame.grid(row=0, column=0, sticky="NSEW")
@@ -37,12 +67,13 @@ def main():
     for i in range(3):
         frame.grid_columnconfigure(i, weight=1, uniform="equal")
 
-    ttk.Label(
+    money_label = ttk.Label(
         frame, text=f"Money: ${player.balance}", font=("Helvetica", 16, "bold")
-    ).grid(row=0, column=0, sticky="W", pady=5, padx=5)
-    ttk.Label(frame, text="Streak: 0", font=("Helvetica", 16, "bold")).grid(
-        row=0, column=2, sticky="E", pady=5, padx=5
     )
+    money_label.grid(row=0, column=0, sticky="W", pady=5, padx=5)
+
+    streak_label = ttk.Label(frame, text="Streak: 0", font=("Helvetica", 16, "bold"))
+    streak_label.grid(row=0, column=2, sticky="E", pady=5, padx=5)
 
     ttk.Label(frame, text="Your Card", font=("Helvetica", 12)).grid(
         row=1, column=0, sticky="S", pady=(10, 2), padx=5
@@ -134,6 +165,7 @@ def main():
     ).grid(row=5, column=2, sticky="EW", pady=20, padx=(10, 2))
 
     bet_amount.bind("<Return>", submit_bet)
+    root.bind("<KeyPress>", lambda e: check_cheat_code(e, money_label, player))
 
     root.mainloop()
 

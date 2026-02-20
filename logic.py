@@ -188,6 +188,9 @@ class Player:
     def update_balance(self, multiplier):
         pass
 
+    def increase_balance(self, amount):
+        self.balance += amount
+
     def increase_streak(self):
         pass
 
