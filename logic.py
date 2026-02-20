@@ -132,7 +132,7 @@ class HigherLower:
         self.current_hidden_card = card[:-1]
         return card
 
-    def get_card_resource_location(self, card, back=False):
+    def get_card_img_path(self, card, back=False):
         if back:
             path = f"assets/back/{random.randint(1, 6)}.png"
         else:
@@ -177,6 +177,7 @@ class Player:
         self.balance = 500
         self.streak = 0
         self.bet = 0
+        self.min_bet = 50
 
     def validate_bet(self, amount):
         pass
@@ -187,26 +188,20 @@ class Player:
     def update_balance(self, multiplier):
         pass
 
-    def get_balance(self):
-        pass
-
     def increase_streak(self):
         pass
 
     def reset_streak(self):
         pass
 
-    def get_streak(self):
+    def is_bankrupt(self):
         pass
 
-    def check_if_bankrupt(self):
+    def reset_game(self):
         pass
 
 
 # For debugging
 if __name__ == "__main__":
     higher_lower = HigherLower()
-    print(f"Player's card: {higher_lower.draw_card()[:-1]}")
-    print(f"House's card: {higher_lower.draw_hidden_card()[:-1]}")
-
-    print(higher_lower.calc_multiplier())
+    player = Player()
