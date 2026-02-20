@@ -83,6 +83,24 @@ class HigherLower:
         self.current_hidden_card = None
 
     def calc_multiplier(self):
+        """
+        Calculate the multiplier for higher, lower, and same value bets,
+        based on the card in `self.current_card`.
+
+        ---
+
+        Let:
+        - `H` = the number of cards higher than the current card
+        - `L` = the number of cards lower than the current card
+
+        The multiplier for a higher bet is calculated as: `13 / H` where `H ≠ 0`
+
+        The multiplier for a lower bet is calculated as: `13 / L` where `L ≠ 0`
+
+        The same bet always has a multiplier of 13 (constant).
+
+        Both the higher and lower multipliers are restricted to the range `[1.05, 13]`.
+        """
         index = list(self.cards.keys()).index(self.current_card)
         above = len(self.cards) - index - 1
         below = index
@@ -90,6 +108,7 @@ class HigherLower:
         prob_higher = above / len(self.cards)
         prob_lower = below / len(self.cards)
 
+        # Avoid ZeroDivisionError
         multiplier_higher = 1 / prob_higher if prob_higher != 0 else 1
         multiplier_lower = 1 / prob_lower if prob_lower != 0 else 1
 
@@ -140,7 +159,24 @@ class HigherLower:
         return path
 
     def make_guess(self, guess):
-        pass
+        valid_guesses = ("higher", "lower", "same")
+        guess = guess.lower()
+
+        if guess not in valid_guesses:
+            raise ValueError(f"Invalid guess, received {guess}")
+
+        cards = list(self.cards.keys())
+        reference_index = cards.index(self.current_card)
+        value_index = cards.index(self.current_hidden_card)
+
+        if value_index < reference_index:
+            answer = "lower"
+        elif value_index > reference_index:
+            answer = "higher"
+        else:
+            answer = "same"
+
+        return guess == answer
 
     def get_current_card(self):
         pass
@@ -183,6 +219,7 @@ class Player:
 # For debugging
 if __name__ == "__main__":
     higher_lower = HigherLower()
-    card = higher_lower.draw_card()
+    print(f"Player's card: {higher_lower.draw_card()[:-1]}")
+    print(f"House's card: {higher_lower.draw_hidden_card()[:-1]}")
 
-    print(higher_lower.get_card_resource_location(card, True))
+    print(higher_lower.make_guess("higher"))
