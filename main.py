@@ -23,7 +23,7 @@ def main():
         row=0, column=2, sticky="E", pady=5, padx=5
     )
 
-    card = tk.PhotoImage(file="assets/a/AH.png")
+    card = tk.PhotoImage(file="assets/A/AH.png")
     ttk.Label(frame, image=card).grid(
         row=1, column=1, sticky="S", pady=(10, 20), padx=5
     )
