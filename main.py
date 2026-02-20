@@ -1,8 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+from logic import HigherLower, Player
+
 
 def main():
+    higher_lower = HigherLower()
+    card = higher_lower.draw_card()
+    multiplier = higher_lower.calc_multiplier()
+
     root = tk.Tk()
     root.title("Higher or Lower")
     root.geometry("800x600")
@@ -23,15 +29,30 @@ def main():
         row=0, column=2, sticky="E", pady=5, padx=5
     )
 
-    card = tk.PhotoImage(file="assets/A/AH.png")
+    card = tk.PhotoImage(file=higher_lower.get_card_resource_location(card))
     ttk.Label(frame, image=card).grid(
-        row=1, column=1, sticky="S", pady=(10, 20), padx=5
+        row=1, column=0, sticky="SE", pady=(10, 20), padx=5
+    )
+
+    house_card = tk.PhotoImage(file=higher_lower.get_card_resource_location("", True))
+    ttk.Label(frame, image=house_card).grid(
+        row=1, column=2, sticky="SW", pady=(10, 20), padx=5
     )
 
     buttons = {
-        "higher": ttk.Button(frame, text="Higher (x??)", command=lambda: print("stub")),
-        "lower": ttk.Button(frame, text="Lower (x??)", command=lambda: print("stub")),
-        "same": ttk.Button(frame, text="Same (x13)", command=lambda: print("stub")),
+        "higher": ttk.Button(
+            frame,
+            text=f"Higher (x{multiplier["higher"]})",
+            command=lambda: print("Higher!"),
+        ),
+        "lower": ttk.Button(
+            frame,
+            text=f"Lower (x{multiplier["lower"]})",
+            command=lambda: print("Lower!"),
+        ),
+        "same": ttk.Button(
+            frame, text=f"Same (x{multiplier["same"]})", command=lambda: print("Same!")
+        ),
     }
 
     btn_format_counter = 0
