@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 
 from logic import HigherLower, Player
 
+ENABLE_CHEATS = False
 
 keypress_code = [
     "Up",
@@ -20,12 +21,40 @@ keypress_code = [
 pressed_keys = []
 
 
-def submit_guess(guess, higher_lower):
+def submit_guess(guess, higher_lower, player):
     pass
 
 
-def check_btn_disabled(multiplier, entered_bet):
-    pass
+def change_card_img(label, path):
+    new_img = tk.PhotoImage(file=path)
+    label.config(image=new_img)
+    label.image = new_img
+
+
+def enable_disable_btn(enable, buttons):
+    if enable:
+        buttons["higher"].config(state="normal")
+        buttons["lower"].config(state="normal")
+        buttons["same"].config(state="normal")
+    else:
+        buttons["higher"].config(state="disabled")
+        buttons["lower"].config(state="disabled")
+        buttons["same"].config(state="disabled")
+
+
+def show_hide_multipliers(show, buttons, multipliers):
+    if show:
+        buttons["higher"].config(text=f"Higher (x{multipliers["higher"]})")
+        buttons["lower"].config(text=f"Lower (x{multipliers["lower"]})")
+        buttons["same"].config(text=f"Same (x{multipliers["same"]})")
+
+        for multiplier in multipliers:
+            if multipliers[multiplier] <= 0:
+                buttons[multiplier].config(state="disabled")
+    else:
+        buttons["higher"].config(text="Higher")
+        buttons["lower"].config(text="Lower")
+        buttons["same"].config(text="Same")
 
 
 def check_cheat_code(event, label, player):
@@ -34,7 +63,7 @@ def check_cheat_code(event, label, player):
     if len(pressed_keys) > len(keypress_code):
         pressed_keys.pop(0)
 
-    if pressed_keys == keypress_code:
+    if pressed_keys == keypress_code and ENABLE_CHEATS:
         player.increase_balance(500)
         pressed_keys.clear()
 
@@ -82,34 +111,35 @@ def main():
         row=1, column=2, sticky="W", pady=(10, 2), padx=5
     )
 
-    player_card = tk.PhotoImage(file=higher_lower.get_card_img_path(card))
-    ttk.Label(frame, image=player_card).grid(
-        row=2, column=0, sticky="SE", pady=(10, 20), padx=5
-    )
+    player_card = tk.PhotoImage(file=higher_lower.get_card_img_path("", True))
+    player_card_label = ttk.Label(frame, image=player_card)
+    player_card_label.grid(row=2, column=0, sticky="SE", pady=(10, 20), padx=5)
 
     dealer_card = tk.PhotoImage(file=higher_lower.get_card_img_path("", True))
-    ttk.Label(frame, image=dealer_card).grid(
-        row=2, column=2, sticky="SW", pady=(10, 20), padx=5
-    )
+    dealer_card_label = ttk.Label(frame, image=dealer_card)
+    dealer_card_label.grid(row=2, column=2, sticky="SW", pady=(10, 20), padx=5)
 
     buttons = {
         "higher": ttk.Button(
             frame,
-            text=f"Higher (x{multiplier["higher"]})",
-            command=lambda: submit_guess("higher", higher_lower),
+            text=f"Higher",
+            command=lambda: submit_guess("higher", higher_lower, player),
             style="TButton",
+            state="disabled",
         ),
         "lower": ttk.Button(
             frame,
-            text=f"Lower (x{multiplier["lower"]})",
-            command=lambda: submit_guess("lower", higher_lower),
+            text=f"Lower",
+            command=lambda: submit_guess("lower", higher_lower, player),
             style="TButton",
+            state="disabled",
         ),
         "same": ttk.Button(
             frame,
-            text=f"Same (x{multiplier["same"]})",
-            command=lambda: submit_guess("same", higher_lower),
+            text=f"Same",
+            command=lambda: submit_guess("same", higher_lower, player),
             style="TButton",
+            state="disabled",
         ),
     }
 
@@ -123,12 +153,7 @@ def main():
         btn_format_counter += 1
 
     bet_amount = ttk.Entry(frame, textvariable=bet_var, font=("Helvetica", 14))
-    bet_amount.grid(row=5, column=0, columnspan=2, sticky="EW", pady=20)
-
-    if multiplier["higher"] <= 0:
-        buttons["higher"].config(state="disabled")
-    if multiplier["lower"] <= 0:
-        buttons["lower"].config(state="disabled")
+    bet_amount.grid(row=5, column=0, columnspan=2, sticky="EW", pady=10)
 
     line = tk.Frame(frame, height=1, width=400, bg="lightgrey")
     line.grid(row=4, column=0, columnspan=3, sticky="EW", pady=20)
@@ -142,6 +167,12 @@ def main():
         if not bet:
             messagebox.showerror("Invalid Bet", "Please enter a bet amount.")
             return
+        elif player.currently_betting:
+            messagebox.showwarning(
+                "Bet in Progress",
+                "You are currently betting. Please complete the bet before making a new one.",
+            )
+            return
         elif not bet.isdigit():
             messagebox.showerror(
                 "Invalid Bet",
@@ -154,15 +185,30 @@ def main():
                 f"Bet amount must be at least ${player.min_bet}, but you entered ${bet}. Please increase the amount.",
             )
             return
+        elif not player.validate_bet(int(bet)):
+            messagebox.showerror(
+                "Invalid Bet",
+                f"The bet amount exceeds the available balance of ${player.balance}.",
+            )
+            return
 
-        print(bet)
+        player.place_bet(int(bet))
+        balance_label.config(text=f"Balance: ${player.balance}")
 
-    ttk.Button(
+        enable_disable_btn(True, buttons)
+        show_hide_multipliers(True, buttons, multiplier)
+        change_card_img(
+            player_card_label,
+            higher_lower.get_card_img_path(higher_lower.current_card_suit),
+        )
+
+    bet_btn = ttk.Button(
         frame,
         text="Submit Bet",
         command=submit_bet,
         style="TButton",
-    ).grid(row=5, column=2, sticky="EW", pady=20, padx=(10, 2))
+    )
+    bet_btn.grid(row=5, column=2, sticky="EW", pady=10, padx=(10, 2))
 
     bet_amount.bind("<Return>", submit_bet)
     root.bind("<KeyPress>", lambda e: check_cheat_code(e, balance_label, player))

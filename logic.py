@@ -98,6 +98,7 @@ class HigherLower:
         lower_cards = below * 4
         same_cards = 3
 
+        # TODO add house edge?
         def fair_multiplier(winning_cards):
             if winning_cards == 0:
                 return 0
@@ -177,6 +178,7 @@ class Player:
         self.balance = 500
         self.streak = 0
         self.bet = 0
+        self.currently_betting = False
         self.min_bet = 50
 
     def validate_bet(self, amount):
@@ -188,11 +190,15 @@ class Player:
     def place_bet(self, amount):
         self.bet = amount
         self.balance -= amount
+        self.currently_betting = True
 
         return self.balance
 
+    def done_bet(self):
+        self.currently_betting = False
+
     def update_balance(self, multiplier):
-        self.balance += self.bet * multiplier
+        self.balance += round(self.bet * multiplier)
         return self.balance
 
     def increase_balance(self, amount):
@@ -217,6 +223,7 @@ class Player:
         self.balance = 500
         self.streak = 0
         self.bet = 0
+        self.currently_betting = False
 
 
 # For debugging
