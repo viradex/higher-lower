@@ -82,7 +82,27 @@ class HigherLower:
         self.current_hidden_card = None
         self.current_hidden_card_suit = None
 
+        self.house_edge = 0.05  # 5%
+
     def calc_multiplier(self):
+        """
+        Calculate the multiplier for higher, lower, and same value bets,
+        based on the card in `self.current_card`.
+
+        ---
+
+        Let:
+        - `M` be the multiplier
+        - `h` be the house edge
+        - `W` be the number of possible winning cards
+
+        The multiplier for 'higher' and 'lower' is calculated using the formula: `M = (51 ∙ (1 - h)) / W` where `W ≠ 0`.
+        If `W` is 0, the multiplier is 0.
+
+        The 'same' multiplier has a constant value of 16.
+
+        The multiplier is limited to the range `M ∈ [1.05, 16]`.
+        """
         if self.current_card is None:
             raise ValueError("No current card drawn.")
 
@@ -96,21 +116,22 @@ class HigherLower:
 
         higher_cards = above * 4
         lower_cards = below * 4
-        same_cards = 3
 
-        # TODO add house edge?
         def fair_multiplier(winning_cards):
             if winning_cards == 0:
                 return 0
             prob = winning_cards / total_remaining
 
-            value = round((1 / prob) / 0.05) * 0.05
+            value = 1 / prob
+            value *= 1 - self.house_edge
+
+            value = max(round(value / 0.05) * 0.05, 1.05)
             return round(value, 2)
 
         return {
             "higher": fair_multiplier(higher_cards),
             "lower": fair_multiplier(lower_cards),
-            "same": fair_multiplier(same_cards),
+            "same": 17,
         }
 
     def draw_card(self):

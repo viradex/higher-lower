@@ -2,29 +2,13 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from logic import HigherLower, Player
-
-ENABLE_CHEATS = False
+from achievements import GameState
 
 root = tk.Tk()
 higher_lower = HigherLower()
 player = Player()
 
 multiplier = {}
-
-keypress_code = [
-    "Up",
-    "Up",
-    "Down",
-    "Down",
-    "Left",
-    "Right",
-    "Left",
-    "Right",
-    "b",
-    "a",
-    "Return",
-]
-pressed_keys = []
 
 
 def change_card_img(label, path):
@@ -132,20 +116,6 @@ def submit_guess(
     reset(buttons, player_label, dealer_label, balance_label, streak_label)
 
 
-def check_cheat_code(event, label):
-    pressed_keys.append(event.keysym)
-
-    if len(pressed_keys) > len(keypress_code):
-        pressed_keys.pop(0)
-
-    if pressed_keys == keypress_code and ENABLE_CHEATS:
-        player.increase_balance(500)
-        pressed_keys.clear()
-
-        print("Increased balance by $500!")
-        label.config(text=f"Balance: ${player.balance}")
-
-
 root.title("Higher or Lower")
 root.geometry("800x600")
 root.resizable(False, False)
@@ -245,6 +215,11 @@ line = tk.Frame(frame, height=1, width=400, bg="lightgrey")
 line.grid(row=4, column=0, columnspan=3, sticky="EW", pady=20)
 
 
+def copy_balance(_):
+    bet_amount.delete(0, tk.END)
+    bet_amount.insert(0, str(player.balance))
+
+
 def submit_bet(_=None):
     bet = bet_var.get().strip()
 
@@ -292,14 +267,14 @@ def submit_bet(_=None):
 
 bet_btn = ttk.Button(
     frame,
-    text="Submit Bet",
+    text="Place Bet",
     command=submit_bet,
     style="TButton",
 )
 bet_btn.grid(row=5, column=2, sticky="EW", pady=10, padx=(10, 2))
 
+balance_label.bind("<Button-1>", copy_balance)
 bet_amount.bind("<Return>", submit_bet)
-root.bind("<KeyPress>", lambda e: check_cheat_code(e, balance_label))
 
 reset(buttons, player_card_label, dealer_card_label, balance_label, streak_label)
 root.mainloop()
