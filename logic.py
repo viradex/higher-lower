@@ -152,6 +152,10 @@ class HigherLower:
 
         if guess not in valid_guesses:
             raise ValueError(f"Invalid guess, received {guess}")
+        elif self.current_card is None or self.current_hidden_card is None:
+            raise TypeError(
+                "Call draw_card() and draw_hidden_card() before making a guess"
+            )
 
         cards = list(self.cards.keys())
         reference_index = cards.index(self.current_card)
@@ -198,8 +202,10 @@ class Player:
         self.currently_betting = False
 
     def update_balance(self, multiplier):
-        self.balance += round(self.bet * multiplier)
-        return self.balance
+        amount = round(self.bet * multiplier)
+
+        self.balance += amount
+        return amount
 
     def increase_balance(self, amount):
         self.balance += amount
@@ -218,6 +224,10 @@ class Player:
             return True
 
         return False
+
+    def reset_bet(self):
+        self.bet = 0
+        self.currently_betting = False
 
     def reset_game(self):
         self.balance = 500
