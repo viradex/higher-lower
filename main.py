@@ -59,7 +59,7 @@ def show_hide_multipliers(show, buttons, multipliers={}):
         buttons["same"].config(text="Same")
 
 
-def reset(buttons, player_label, dealer_label):
+def reset(buttons, player_label, dealer_label, balance_label, streak_label):
     global multiplier
 
     enable_disable_btn(False, buttons)
@@ -75,21 +75,19 @@ def reset(buttons, player_label, dealer_label):
     higher_lower.draw_hidden_card()
     multiplier = higher_lower.calc_multiplier()
 
+    balance_label.config(text=f"Balance: ${player.balance}")
+    streak_label.config(text=f"Streak: {player.streak}")
 
-def restart(buttons, player_label, dealer_label):
+
+def restart(buttons, player_label, dealer_label, balance_label, streak_label):
     higher_lower.reset_game()
     player.reset_game()
 
-    reset(buttons, player_label, dealer_label)
+    reset(buttons, player_label, dealer_label, balance_label, streak_label)
 
 
 def submit_guess(
-    guess,
-    multipliers,
-    balance_label,
-    player_label,
-    dealer_label,
-    buttons,
+    guess, multipliers, buttons, balance_label, player_label, dealer_label, streak_label
 ):
     if not player.currently_betting:
         return
@@ -102,7 +100,10 @@ def submit_guess(
     correct = higher_lower.make_guess(guess)
     if correct:
         amount = player.update_balance(multipliers[guess])
+        player.increase_streak()
+
         balance_label.config(text=f"Balance: ${player.balance}")
+        streak_label.config(text=f"Streak: {player.streak}")
 
         messagebox.showinfo(
             "Betting Result", f"You guessed correctly and made ${amount}!"
@@ -110,12 +111,15 @@ def submit_guess(
 
         player.done_bet()
     else:
+        player.reset_streak()
+        streak_label.config(text=f"Streak: {player.streak}")
+
         messagebox.showinfo("Betting Result", "You guessed incorrectly.")
 
     if player.is_bankrupt():
         confirm_restart = messagebox.askyesno(
             "Game Over",
-            "You are almost bankrupt and can't make any more bets! Would you like to restart?",
+            "You are bankrupt and can't make any more bets! Would you like to restart?",
             default="yes",
         )
 
@@ -123,9 +127,9 @@ def submit_guess(
             root.destroy()
             exit(0)
 
-        restart(buttons, player_label, dealer_label)
+        restart(buttons, player_label, dealer_label, balance_label, streak_label)
 
-    reset(buttons, player_label, dealer_label)
+    reset(buttons, player_label, dealer_label, balance_label, streak_label)
 
 
 def check_cheat_code(event, label):
@@ -189,10 +193,11 @@ buttons = {
         command=lambda: submit_guess(
             "higher",
             multiplier,
+            buttons,
             balance_label,
             player_card_label,
             dealer_card_label,
-            buttons,
+            streak_label,
         ),
         style="TButton",
     ),
@@ -202,10 +207,11 @@ buttons = {
         command=lambda: submit_guess(
             "lower",
             multiplier,
+            buttons,
             balance_label,
             player_card_label,
             dealer_card_label,
-            buttons,
+            streak_label,
         ),
         style="TButton",
     ),
@@ -215,10 +221,11 @@ buttons = {
         command=lambda: submit_guess(
             "same",
             multiplier,
+            buttons,
             balance_label,
             player_card_label,
             dealer_card_label,
-            buttons,
+            streak_label,
         ),
         style="TButton",
     ),
@@ -294,5 +301,5 @@ bet_btn.grid(row=5, column=2, sticky="EW", pady=10, padx=(10, 2))
 bet_amount.bind("<Return>", submit_bet)
 root.bind("<KeyPress>", lambda e: check_cheat_code(e, balance_label))
 
-reset(buttons, player_card_label, dealer_card_label)
+reset(buttons, player_card_label, dealer_card_label, balance_label, streak_label)
 root.mainloop()
