@@ -180,28 +180,43 @@ class Player:
         self.min_bet = 50
 
     def validate_bet(self, amount):
-        pass
+        if amount < self.min_bet or amount > self.balance:
+            return False
+
+        return True
 
     def place_bet(self, amount):
-        pass
+        self.bet = amount
+        self.balance -= amount
+
+        return self.balance
 
     def update_balance(self, multiplier):
-        pass
+        self.balance += self.bet * multiplier
+        return self.balance
 
     def increase_balance(self, amount):
         self.balance += amount
+        return self.balance
 
     def increase_streak(self):
-        pass
+        self.streak += 1
+        return self.streak
 
     def reset_streak(self):
-        pass
+        self.streak = 0
+        return self.streak
 
     def is_bankrupt(self):
-        pass
+        if self.balance < self.min_bet:
+            return True
+
+        return False
 
     def reset_game(self):
-        pass
+        self.balance = 500
+        self.streak = 0
+        self.bet = 0
 
 
 # For debugging

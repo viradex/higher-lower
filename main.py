@@ -39,7 +39,7 @@ def check_cheat_code(event, label, player):
         pressed_keys.clear()
 
         print("Increased balance by $500!")
-        label.config(text=f"Money: ${player.balance}")
+        label.config(text=f"Balance: ${player.balance}")
 
 
 def main():
@@ -67,10 +67,10 @@ def main():
     for i in range(3):
         frame.grid_columnconfigure(i, weight=1, uniform="equal")
 
-    money_label = ttk.Label(
-        frame, text=f"Money: ${player.balance}", font=("Helvetica", 16, "bold")
+    balance_label = ttk.Label(
+        frame, text=f"Balance: ${player.balance}", font=("Helvetica", 16, "bold")
     )
-    money_label.grid(row=0, column=0, sticky="W", pady=5, padx=5)
+    balance_label.grid(row=0, column=0, sticky="W", pady=5, padx=5)
 
     streak_label = ttk.Label(frame, text="Streak: 0", font=("Helvetica", 16, "bold"))
     streak_label.grid(row=0, column=2, sticky="E", pady=5, padx=5)
@@ -165,7 +165,7 @@ def main():
     ).grid(row=5, column=2, sticky="EW", pady=20, padx=(10, 2))
 
     bet_amount.bind("<Return>", submit_bet)
-    root.bind("<KeyPress>", lambda e: check_cheat_code(e, money_label, player))
+    root.bind("<KeyPress>", lambda e: check_cheat_code(e, balance_label, player))
 
     root.mainloop()
 
