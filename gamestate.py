@@ -4,7 +4,8 @@ class GameState:
         self.reset_all()
 
     def resolve_round(self, won, bet, multiplier, choice, player_card, dealer_card):
-        self.previous_balance = self.player.balance
+        self.balance = self.player.balance
+        self.previous_balance = self.balance
 
         self.last_bet = bet
         self.last_multiplier = multiplier
@@ -16,28 +17,25 @@ class GameState:
 
         if won:
             self.streak += 1
+            self.lose_streak = 0
         else:
             self.streak = 0
+            self.lose_streak += 1
 
-        if won:
-            if choice == "higher":
-                self.high_streak += 1
-                self.low_streak = 0
-                self.same_streak = 0
+            self.lost_this_run = True
 
-            elif choice == "lower":
-                self.low_streak += 1
-                self.high_streak = 0
-                self.same_streak = 0
-
-            elif choice == "same":
-                self.same_streak += 1
-                self.high_streak = 0
-                self.low_streak = 0
-        else:
-            self.high_streak = 0
+        if choice == "higher":
+            self.high_streak += 1
             self.low_streak = 0
             self.same_streak = 0
+        elif choice == "lower":
+            self.low_streak += 1
+            self.high_streak = 0
+            self.same_streak = 0
+        elif choice == "same":
+            self.same_streak += 1
+            self.high_streak = 0
+            self.low_streak = 0
 
         self.lowest_balance_this_run = min(
             self.lowest_balance_this_run, self.player.balance
@@ -62,10 +60,12 @@ class GameState:
             self.no_large_bets = False
 
     def reset_all(self):
-        self.previous_balance = self.player.balance
-        self.lowest_balance_this_run = self.player.balance
+        self.balance = self.player.balance
+        self.previous_balance = self.balance
+        self.lowest_balance_this_run = self.balance
 
         self.streak = 0
+        self.lose_streak = 0
         self.high_streak = 0
         self.low_streak = 0
         self.same_streak = 0
@@ -84,3 +84,4 @@ class GameState:
         self.last_multiplier = 1.0
         self.last_choice = None
         self.won_last_round = False
+        self.lost_this_run = False
