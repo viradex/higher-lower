@@ -3,11 +3,14 @@ from tkinter import ttk, messagebox
 
 from logic import HigherLower, Player
 from gamestate import GameState
+from achievements import AchievementManager, achievements
 
 root = tk.Tk()
+
 higher_lower = HigherLower()
 player = Player()
 gs = GameState(player)
+achievement_manager = AchievementManager(achievements)
 
 multiplier = {}
 
@@ -84,20 +87,9 @@ def submit_guess(
     )
 
     correct = higher_lower.make_guess(guess)
-    gs.resolve_round(
-        correct,
-        player.bet,
-        multipliers[guess],
-        guess,
-        higher_lower.current_card,
-        higher_lower.current_hidden_card,
-    )
-
-    for attribute, value in vars(gs).items():
-        print(f"* {attribute}: {value}")
-    print()
 
     if correct:
+        gs.previous_balance = player.balance
         amount = player.update_balance(multipliers[guess])
         player.increase_streak()
 
@@ -114,6 +106,19 @@ def submit_guess(
         streak_label.config(text=f"Streak: {player.streak}")
 
         messagebox.showinfo("Betting Result", "You guessed incorrectly.")
+
+    gs.resolve_round(
+        correct,
+        player.bet,
+        multipliers[guess],
+        guess,
+        higher_lower.current_card,
+        higher_lower.current_hidden_card,
+    )
+
+    for attribute, value in vars(gs).items():
+        print(f"* {attribute}: {value}")
+    print()
 
     if player.is_bankrupt():
         confirm_restart = messagebox.askyesno(

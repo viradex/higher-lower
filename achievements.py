@@ -1,3 +1,33 @@
+class AchievementManager:
+    def __init__(self, achievements):
+        self.achievements = achievements
+        self.save_data_file = "hl-achievements.json"
+
+    def check_achievements(self, game_state):
+        pass
+
+    def unlock(self, achievement):
+        pass
+
+    def get_unlocked(self):
+        pass
+
+    def get_locked(self):
+        pass
+
+    def update_data(self):
+        pass
+
+    def get_data(self):
+        pass
+
+    def create_file(self):
+        pass
+
+    def reset(self):
+        pass
+
+
 class Achievement:
     def __init__(self, name, description, hidden, condition):
         self.name = name
@@ -221,7 +251,7 @@ achievements = {
         "Untouchable",
         "Reach $5000 without losing a single round.",
         False,
-        lambda gs: gs.won_last_round and gs.balance >= 5000 and not gs.lost_this_run,
+        lambda gs: gs.balance >= 5000 and not gs.lost_this_run,
     ),
     "funny_number": Achievement(
         "SIIIXXX SEVEEEEEENNNNN!!!!",

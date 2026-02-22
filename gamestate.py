@@ -15,6 +15,8 @@ class GameState:
         self.player_card = player_card
         self.dealer_card = dealer_card
 
+        self.total_rounds += 1
+
         if won:
             self.streak += 1
             self.lose_streak = 0
@@ -61,7 +63,7 @@ class GameState:
 
     def reset_all(self):
         self.balance = self.player.balance
-        self.previous_balance = self.balance
+        # self.previous_balance = self.balance
         self.lowest_balance_this_run = self.balance
 
         self.streak = 0
@@ -80,6 +82,7 @@ class GameState:
 
         self.no_large_bets = True
 
+        self.total_rounds = 0
         self.last_bet = 0
         self.last_multiplier = 1.0
         self.last_choice = None
