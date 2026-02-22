@@ -5,6 +5,8 @@ from logic import HigherLower, Player
 from gamestate import GameState
 from achievements import AchievementManager, achievements
 
+ENABLE_CHEATS = False
+
 root = tk.Tk()
 
 higher_lower = HigherLower()
@@ -13,6 +15,21 @@ gs = GameState(player)
 achievement_manager = AchievementManager(achievements, root)
 
 multiplier = {}
+
+keypress_code = [
+    "Up",
+    "Up",
+    "Down",
+    "Down",
+    "Left",
+    "Right",
+    "Left",
+    "Right",
+    "b",
+    "a",
+    "Return",
+]
+pressed_keys = []
 
 
 def change_card_img(label, path):
@@ -132,6 +149,20 @@ def submit_guess(
         restart(buttons, player_label, dealer_label, balance_label, streak_label)
 
     reset(buttons, player_label, dealer_label, balance_label, streak_label)
+
+
+def check_cheat_code(event, label):
+    pressed_keys.append(event.keysym)
+
+    if len(pressed_keys) > len(keypress_code):
+        pressed_keys.pop(0)
+
+    if pressed_keys == keypress_code and ENABLE_CHEATS:
+        player.increase_balance(100000)
+        pressed_keys.clear()
+
+        print("[DEBUG/CHEAT] Increased balance by $100,000!")
+        label.config(text=f"Balance: ${player.balance}")
 
 
 root.title("Higher or Lower")
@@ -293,6 +324,7 @@ bet_btn.grid(row=5, column=2, sticky="EW", pady=10, padx=(10, 2))
 
 balance_label.bind("<Button-1>", copy_balance)
 bet_amount.bind("<Return>", submit_bet)
+root.bind("<KeyPress>", lambda e: check_cheat_code(e, balance_label))
 
 reset(buttons, player_card_label, dealer_card_label, balance_label, streak_label)
 root.mainloop()

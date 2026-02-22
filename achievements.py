@@ -22,7 +22,7 @@ class AchievementManager:
         achievement.unlocked = True
 
         popup = tk.Toplevel(self.root)
-        popup.title("Achievement Unlocked!")
+        popup.title("")
         popup.resizable(False, False)
         popup.attributes("-topmost", True)
 
@@ -283,9 +283,9 @@ achievements = {
     ),
     "no_large_bets_win": Achievement(
         "Slow and Steady",
-        "Reach $2000 without betting over $100.",
+        "Reach $1000 without betting over $100.",
         False,
-        lambda gs: gs.balance >= 2000 and gs.no_large_bets,
+        lambda gs: gs.balance >= 1000 and gs.no_large_bets,
     ),
     "low_multiplier_wins": Achievement(
         "Penny Pincher",
@@ -325,11 +325,11 @@ achievements = {
         True,
         lambda gs: gs.total_rounds <= 3 and gs.streak >= 3,
     ),
-    "reach_5k_no_loss": Achievement(
+    "reach_high_no_loss": Achievement(
         "Untouchable",
-        "Reach $5000 without losing a single round.",
+        "Reach $2000 without losing a single round.",
         False,
-        lambda gs: gs.balance >= 5000 and not gs.lost_this_run,
+        lambda gs: gs.balance >= 2000 and not gs.lost_this_run,
     ),
     "funny_number": Achievement(
         "SIIIXXX SEVEEEEEENNNNN!!!!",
