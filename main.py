@@ -10,7 +10,7 @@ root = tk.Tk()
 higher_lower = HigherLower()
 player = Player()
 gs = GameState(player)
-achievement_manager = AchievementManager(achievements)
+achievement_manager = AchievementManager(achievements, root)
 
 multiplier = {}
 
@@ -96,16 +96,10 @@ def submit_guess(
         balance_label.config(text=f"Balance: ${player.balance}")
         streak_label.config(text=f"Streak: {player.streak}")
 
-        messagebox.showinfo(
-            "Betting Result", f"You guessed correctly and made ${amount}!"
-        )
-
         player.done_bet()
     else:
         player.reset_streak()
         streak_label.config(text=f"Streak: {player.streak}")
-
-        messagebox.showinfo("Betting Result", "You guessed incorrectly.")
 
     gs.resolve_round(
         correct,
@@ -115,10 +109,14 @@ def submit_guess(
         higher_lower.current_card,
         higher_lower.current_hidden_card,
     )
+    achievement_manager.check_achievements(gs)
 
-    for attribute, value in vars(gs).items():
-        print(f"* {attribute}: {value}")
-    print()
+    if correct:
+        messagebox.showinfo(
+            "Betting Result", f"You guessed correctly and made ${amount}!"
+        )
+    else:
+        messagebox.showinfo("Betting Result", "You guessed incorrectly.")
 
     if player.is_bankrupt():
         confirm_restart = messagebox.askyesno(

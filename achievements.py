@@ -1,31 +1,109 @@
+import tkinter as tk
+from tkinter import ttk
+
+
 class AchievementManager:
-    def __init__(self, achievements):
+    def __init__(self, achievements, root):
         self.achievements = achievements
+        self.root = root
         self.save_data_file = "hl-achievements.json"
 
     def check_achievements(self, game_state):
-        pass
+        newly_unlocked = []
+
+        for achievement in self.achievements.values():
+            if not achievement.unlocked and achievement.condition(game_state):
+                self.unlock(achievement)
+                newly_unlocked.append(achievement)
+
+        return newly_unlocked
 
     def unlock(self, achievement):
-        pass
+        achievement.unlocked = True
+
+        popup = tk.Toplevel(self.root)
+        popup.title("Achievement Unlocked!")
+        popup.resizable(False, False)
+        popup.attributes("-topmost", True)
+
+        frame = ttk.Frame(popup, padding=15)
+        frame.grid(row=0, column=0)
+
+        frame.columnconfigure(0, weight=1)
+
+        ttk.Label(
+            frame, text="Achievement Unlocked!", font=("Segoe UI", 8), justify="center"
+        ).grid(row=0, column=0, pady=(0, 8), sticky="S")
+
+        ttk.Label(
+            frame, text=achievement.name, font=("Segoe UI", 12, "bold"), anchor="center"
+        ).grid(row=1, column=0, pady=(0, 5), sticky="EW")
+
+        ttk.Label(
+            frame, text=achievement.description, wraplength=250, justify="center"
+        ).grid(row=2, column=0, pady=(0, 5), sticky="EW")
+
+        ttk.Label(
+            frame,
+            text="Hidden Achievement" if achievement.hidden else "Visible Achievement",
+            foreground="gray",
+            justify="center",
+        ).grid(row=3, column=0, pady=(0, 10), sticky="S")
+
+        ttk.Button(frame, text="OK", command=popup.destroy).grid(row=4, column=0)
+
+        popup.update_idletasks()
+
+        window_width = popup.winfo_width()
+        window_height = popup.winfo_height()
+
+        screen_width = popup.winfo_screenwidth()
+        screen_height = popup.winfo_screenheight()
+
+        x = screen_width - window_width - 20
+        y = screen_height - window_height - 100
+
+        # Window scaling and positioning
+        popup.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
     def get_unlocked(self):
-        pass
+        unlocked = []
+
+        for achievement in self.achievements.values():
+            if achievement.unlocked:
+                unlocked.append(achievement)
+
+        return unlocked
 
     def get_locked(self):
-        pass
+        unlocked = []
+
+        for achievement in self.achievements.values():
+            if not achievement.unlocked:
+                unlocked.append(achievement)
+
+        return unlocked
 
     def update_data(self):
+        # TODO add json file storage
+
         pass
 
     def get_data(self):
+        # TODO add json file storage
+
         pass
 
     def create_file(self):
+        # TODO add json file storage
+
         pass
 
     def reset(self):
-        pass
+        # TODO add json file storage
+
+        for achievement in self.achievements.values():
+            achievement.unlocked = False
 
 
 class Achievement:
