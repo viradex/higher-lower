@@ -2,11 +2,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from logic import HigherLower, Player
-from achievements import GameState
+from gamestate import GameState
 
 root = tk.Tk()
 higher_lower = HigherLower()
 player = Player()
+gs = GameState(player)
 
 multiplier = {}
 
@@ -67,6 +68,7 @@ def restart(buttons, player_label, dealer_label, balance_label, streak_label):
     higher_lower.reset_game()
     player.reset_game()
 
+    gs.reset_all()
     reset(buttons, player_label, dealer_label, balance_label, streak_label)
 
 
@@ -82,6 +84,19 @@ def submit_guess(
     )
 
     correct = higher_lower.make_guess(guess)
+    gs.resolve_round(
+        correct,
+        player.bet,
+        multipliers[guess],
+        guess,
+        higher_lower.current_card,
+        higher_lower.current_hidden_card,
+    )
+
+    for attribute, value in vars(gs).items():
+        print(f"* {attribute}: {value}")
+    print()
+
     if correct:
         amount = player.update_balance(multipliers[guess])
         player.increase_streak()

@@ -1,25 +1,29 @@
-class GameState:
-    def __init__(self):
-        pass
-
-    def reset_run():
-        pass
-
-
 class Achievement:
-    def __init__(self):
-        pass
+    def __init__(self, key, name, description, hidden, condition):
+        self.key = key
+        self.name = name
+        self.description = description
+        self.hidden = hidden
+        self.condition = condition
+        self.unlocked = False
 
     @property
     def display_name(self):
-        pass
+        if self.hidden and not self.unlocked:
+            return "???"
+        return self.name
 
     @property
     def display_description(self):
-        pass
+        if self.hidden and not self.unlocked:
+            return "Keep playing to discover this achievement!"
+        return self.description
 
     def check(self, game_state):
-        pass
+        if not self.unlocked and self.condition(game_state):
+            self.unlocked = True
+            return True
+        return False
 
     def to_dict(self):
         pass
