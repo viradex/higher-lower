@@ -190,9 +190,9 @@ achievements = {
         False,
         lambda gs: gs.balance >= 10000,
     ),
-    "balance_100k": Achievement(
+    "balance_50k": Achievement(
         "Kind of a Millionaire",
-        "Reach $100,000 in balance.",
+        "Reach $50,000 in balance.",
         False,
         lambda gs: gs.balance >= 100000,
     ),
@@ -235,7 +235,7 @@ achievements = {
         True,
         lambda gs: not gs.won_last_round
         and gs.previous_balance >= 5000
-        and gs.balance == 0,
+        and gs.balance < 50,
     ),
     "high_multiplier_streak": Achievement(
         "Mathematically Improbable",
@@ -335,8 +335,6 @@ achievements = {
         "SIIIXXX SEVEEEEEENNNNN!!!!",
         "Get your card to have a value of 6 and the dealer's card to have a value of 7.",
         True,
-        lambda gs: gs.won_last_round
-        and gs.player_card == "6"
-        and gs.dealer_card == "7",
+        lambda gs: gs.player_card == "6" and gs.dealer_card == "7",
     ),
 }
